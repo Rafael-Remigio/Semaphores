@@ -147,13 +147,25 @@ static void waitInQueue (unsigned int passengerId)
 
     /* insert your code here */
 
+    // Update number of passenger in queue
+    sh->fSt.nPassInQueue++;
+    // Inform hostess that he is ready for boarding
+    sh->fSt.st.passengerStat[passengerId] = IN_QUEUE;
+    // Save State
+    saveState(nFic, &sh->fSt);
+
     if (semUp (semgid, sh->mutex) == -1)                                                      /* exit critical region */
     { perror ("error on the up operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
 
     /* insert your code here */
-
+    // if(acknowledged by hostess)
+    if (semDown (semgid, sh->passengersWaitInQueue) == -1) {                                    /* exit critical region */
+        perror ("error on the down operation for semaphore access (PG)");
+        exit (EXIT_FAILURE);
+    }
+    
 
     if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
         perror ("error on the down operation for semaphore access (PG)");
@@ -161,6 +173,20 @@ static void waitInQueue (unsigned int passengerId)
     }
 
     /* insert your code here */
+    
+
+    // Provide its id to hostess
+    sh->fSt.passengerChecked = passengerId;
+
+    // Giver her permission to read the id
+    if (semUp (semgid, sh->idShown) == -1) {                                    /* enter critical region */
+        perror ("error on the Up operation for semaphore access (PG)");
+        exit (EXIT_FAILURE);
+    }
+
+    // Save State
+    saveState(nFic, &sh->fSt);
+
 
     if (semUp (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
         perror ("error on the down operation for semaphore access (PG)");
