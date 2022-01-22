@@ -237,7 +237,7 @@ static bool checkPassport()
         sh->fSt.st.hostessStat = CHECK_PASSPORT;
 
         //printf("nPassengersInQueue == %d \n\n", nPassengersInQueue());
-        if(nPassengersInFlight() == MAXFC || (nPassengersInQueue() == 1 && nPassengersInFlight() >= MINFC) || sh->fSt.totalPassBoarded == N){
+        if(nPassengersInFlight() == MAXFC-1 || (nPassengersInQueue() == 1 && nPassengersInFlight() >= MINFC-1) || sh->fSt.totalPassBoarded == N-1){
             last = true;
         }
 
