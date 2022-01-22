@@ -190,11 +190,7 @@ static void waitInQueue (unsigned int passengerId)
         // Save State
         saveState(nFic, &sh->fSt);
 
-        // Giver her permission to read the id
-        if (semUp (semgid, sh->idShown) == -1) {                                    /* Tell Host the id was given */
-            perror ("error on the Up operation for semaphore access (PG)");
-            exit (EXIT_FAILURE);
-        }
+        
 
     if (semUp (semgid, sh->mutex) == -1) {                                                  /* Exit critical region -------------------*/
         perror ("error on the down operation for semaphore access (PG)");
@@ -202,7 +198,11 @@ static void waitInQueue (unsigned int passengerId)
     }
 
     /* insert your code here */
-    
+    // Giver her permission to read the id
+        if (semUp (semgid, sh->idShown) == -1) {                                    /* Tell Host the id was given */
+            perror ("error on the Up operation for semaphore access (PG)");
+            exit (EXIT_FAILURE);
+        }
     
 
     
@@ -238,17 +238,15 @@ static void waitUntilDestination (unsigned int passengerId)
         /* insert your code here */
         sh->fSt.nPassInFlight--;
         sh->fSt.st.passengerStat[passengerId] = AT_DESTINATION;
-        if(sh->fSt.nPassInFlight < 0){
-            //inform pilot that plane is empty.
-            sh->fSt.finished = false;
-        }
-
         
-
-        if (semUp (semgid, sh->planeEmpty) == -1) {                                  /* Free Pilot */
-        perror ("error on the down operation for semaphore access (PG)");
-        exit (EXIT_FAILURE);
+        if(sh->fSt.nPassInFlight == 0){
+            //inform pilot that plane is empty. 
+            if (semUp (semgid, sh->planeEmpty) == -1) {                                  /* Free Pilot */
+                perror ("error on the down operation for semaphore access (PG)");
+                exit (EXIT_FAILURE);
+            }
         }
+        
         // Save State
         saveState(nFic, &sh->fSt);
 
@@ -257,5 +255,6 @@ static void waitUntilDestination (unsigned int passengerId)
         exit (EXIT_FAILURE);
     }
 
+    
 }
 
