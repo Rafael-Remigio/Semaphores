@@ -151,7 +151,6 @@ static void waitInQueue (unsigned int passengerId)
         exit (EXIT_FAILURE);
     }
 
-
         /* insert your code here */ 
         // Update number of passenger in queue
         sh->fSt.nPassInQueue++;
@@ -165,32 +164,23 @@ static void waitInQueue (unsigned int passengerId)
         exit (EXIT_FAILURE);
     }
 
-
     /* insert your code here */
-    
-
- 
     if (semDown (semgid, sh->passengersWaitInQueue) == -1) {                                  /* Wait for host */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
-    }
-    
-        
+    }        
      
     if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region ---------------------*/
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
 
-        /* insert your code here */
-         
+        /* insert your code here */ 
         // Provide its id to hostess and update state
         sh->fSt.passengerChecked = passengerId;
         sh->fSt.st.passengerStat[passengerId] = IN_FLIGHT;
         // Save State
         saveState(nFic, &sh->fSt);
-
-        
 
     if (semUp (semgid, sh->mutex) == -1) {                                                  /* Exit critical region -------------------*/
         perror ("error on the down operation for semaphore access (PG)");
@@ -199,15 +189,10 @@ static void waitInQueue (unsigned int passengerId)
 
     /* insert your code here */
     // Giver her permission to read the id
-        if (semUp (semgid, sh->idShown) == -1) {                                    /* Tell Host the id was given */
-            perror ("error on the Up operation for semaphore access (PG)");
-            exit (EXIT_FAILURE);
-        }
-    
-
-    
-
-    
+    if (semUp (semgid, sh->idShown) == -1) {                                    /* Tell Host the id was given */
+        perror ("error on the Up operation for semaphore access (PG)");
+        exit (EXIT_FAILURE);
+    }
 }
 
 /**

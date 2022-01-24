@@ -252,8 +252,15 @@ static void dropPassengersAtTarget (){
         sh->fSt.st.pilotStat = DROPING_PASSENGERS;
         
         // Save State
-        saveState(nFic, &sh->fSt);
         saveFlightArrived(nFic, &sh->fSt);
+        saveState(nFic, &sh->fSt);
+
+        for(int i=0;i<sh->fSt.nPassInFlight;i++){
+        if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                                  /* Let Passenger leave */
+            perror ("error on the down operation for semaphore access (PG)");
+            exit (EXIT_FAILURE);
+        } 
+    }
    
         
 
@@ -265,12 +272,7 @@ static void dropPassengersAtTarget (){
 
     /* insert your code here */
       
-    for(int i=0;i<=sh->fSt.nPassInFlight+ 1;i++){
-        if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                                  /* Let Passenger leave */
-            perror ("error on the down operation for semaphore access (PG)");
-            exit (EXIT_FAILURE);
-        } 
-    }
+    
     
        
     if (semDown (semgid, sh->planeEmpty) == -1) {                                  /* Wait for them to leave */
