@@ -1,53 +1,47 @@
-static void waitInQueue (unsigned int passengerId)
-{
+static void dropPassengersAtTarget (){
+
     if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
+        perror ("error on the down operation for semaphore access (PT)");
+        exit (EXIT_FAILURE);
+    }
+
+        // Updating State 
+        sh->fSt.st.pilotStat = DROPING_PASSENGERS;
+        // Save State
+        saveFlightArrived(nFic, &sh->fSt);
+        saveState(nFic, &sh->fSt);
+        // Free all passengers 
+        for(int i=0;i<sh->fSt.nPassInFlight;i++){
+            if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                                  /* Let Passenger leave */
+                perror ("error on the down operation for semaphore access (PG)");
+                exit (EXIT_FAILURE);
+            } 
+        }
+   
+    if (semUp (semgid, sh->mutex) == -1)  {                                                   /* exit critical region */
+        perror ("error on the up operation for semaphore access (PT)");
+        exit (EXIT_FAILURE);
+    }
+
+    
+       
+    if (semDown (semgid, sh->planeEmpty) == -1) {                                  /* Wait for them to leave */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
 
-    /* insert your code here */
-
-    // Update number of passenger in queue
-    sh->fSt.nPassInQueue++;
-    // Inform hostess that he is ready for boarding
-    sh->fSt.st.passengerStat[passengerId] = IN_QUEUE;
-    // Save State
-    saveState(nFic, &sh->fSt);
-
-    if (semUp (semgid, sh->mutex) == -1)                                                      /* exit critical region */
-    { perror ("error on the up operation for semaphore access (PG)");
-        exit (EXIT_FAILURE);
-    }
-
-    /* insert your code here */
-    // if(acknowledged by hostess)
-    if (semDown (semgid, sh->passengersWaitInQueue) == -1) {                                    /* exit critical region */
-        perror ("error on the down operation for semaphore access (PG)");
-        exit (EXIT_FAILURE);
-    }
     
 
     if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
-        perror ("error on the down operation for semaphore access (PG)");
+        perror ("error on the down operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
 
-    /* insert your code here */
-    
-    // Provide its id to hostess and giver her permission to read the id
-    if (semUp (semgid, sh->idShown) == -1) {                                    /* enter critical region */
-        perror ("error on the Up operation for semaphore access (PG)");
+        // Save State
+        saveFlightReturning(nFic, &sh->fSt);
+
+    if (semUp (semgid, sh->mutex) == -1)  {                                                   /* exit critical region */
+        perror ("error on the up operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
-
-    // Save State
-    saveState(nFic, &sh->fSt);
-
-
-    if (semUp (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
-        perror ("error on the down operation for semaphore access (PG)");
-        exit (EXIT_FAILURE);
-    }
-
-    /* insert your code here */
 }

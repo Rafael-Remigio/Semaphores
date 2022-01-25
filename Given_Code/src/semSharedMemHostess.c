@@ -145,11 +145,9 @@ static void waitForNextFlight ()
         perror ("error on the up operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
     }
-
-        /* insert your code here */
-
-        sh->fSt.st.hostessStat = WAIT_FOR_FLIGHT;
         
+        // Update State
+        sh->fSt.st.hostessStat = WAIT_FOR_FLIGHT;
         // Save State
         saveState(nFic, &sh->fSt);
     
@@ -158,8 +156,8 @@ static void waitForNextFlight ()
         exit (EXIT_FAILURE);
     }
 
-    /* insert your code here */
-    if (semDown (semgid, sh->readyForBoarding) == -1) {                                                      /* Wait for host */
+    
+    if (semDown (semgid, sh->readyForBoarding) == -1) {                                  /* Wait for Pilot to be ready for boarding */
         perror ("error on the up operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
@@ -183,7 +181,7 @@ static void waitForPassenger ()
         exit (EXIT_FAILURE);
     }
 
-        /* insert your code here */
+        // Update State
         sh->fSt.st.hostessStat = WAIT_FOR_PASSENGER;
         // Save State
         saveState(nFic, &sh->fSt);
@@ -193,9 +191,8 @@ static void waitForPassenger ()
         exit (EXIT_FAILURE);
     }
 
-    
-
-    if (semDown (semgid, sh->passengersInQueue) == -1) {                                                  /* exit critical region */
+     
+    if (semDown (semgid, sh->passengersInQueue) == -1) {                                                  /* Wait ffor passengers to get in queue */
         perror ("error on the down operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
     }
@@ -232,15 +229,15 @@ static bool checkPassport()
 
     }
 
-        /* insert your code here */
-
+        // Update State
         sh->fSt.st.hostessStat = CHECK_PASSPORT;
 
-        //printf("nPassengersInQueue == %d \n\n", nPassengersInQueue());
+        // Check departing conditions 
         if(nPassengersInFlight() == MAXFC-1 || (nPassengersInQueue() == 1 && nPassengersInFlight() >= MINFC-1) || sh->fSt.totalPassBoarded == N-1){
             last = true;
         }
 
+        // Save State
         saveState(nFic, &sh->fSt);
 
 
@@ -249,18 +246,12 @@ static bool checkPassport()
         exit (EXIT_FAILURE);
     }
 
- 
-
-    /* insert your code here */
     
-    if (semDown (semgid, sh->idShown) == -1)  {                                                 /* enter critical region */
+    if (semDown (semgid, sh->idShown) == -1)  {                                                 /* Wait for Passengers to show id */
         perror ("error on the up operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
 
     }
-
-
-
 
     if (semDown (semgid, sh->mutex) == -1)  {                                                 /* enter critical region */
         perror ("error on the up operation for semaphore access (HT)");
@@ -268,11 +259,12 @@ static bool checkPassport()
 
     }
 
-        /* insert your code here */
+        // Updating variables
         sh->fSt.nPassInQueue--;
         sh->fSt.nPassInFlight++; 
         sh->fSt.totalPassBoarded++; 
 
+        // "Save State"
         savePassengerChecked(nFic, &sh->fSt);
 
 
@@ -281,7 +273,7 @@ static bool checkPassport()
         exit (EXIT_FAILURE);
     }
 
-    /* insert your code here */
+    /* insert your code here */                  // dk what to put here
 
     return last;
 }
@@ -312,15 +304,16 @@ void  signalReadyToFlight()
         exit (EXIT_FAILURE);
     }
 
-    /* insert your code here */
+    // Updating state and number of passengers departing
     sh->fSt.st.hostessStat = READY_TO_FLIGHT;
     sh->fSt.nPassengersInFlight[sh->fSt.nFlight-1] = nPassengersInFlight();
 
+    // Checks if all passengers have boarded
     if(sh->fSt.totalPassBoarded == N){
         sh->fSt.finished = true;
     }
 
-
+    // Save State 
     saveState(nFic, &sh->fSt);
     saveFlightDeparted(nFic, &sh->fSt);
 
@@ -328,7 +321,8 @@ void  signalReadyToFlight()
         perror ("error on the up operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
     }
-    /* insert your code here */
+      
+
     if (semUp (semgid, sh->readyToFlight) == -1) {                                                      /* Signal Pilot */   
         perror ("error on the up operation for semaphore access (PT)");
         exit (EXIT_FAILURE);

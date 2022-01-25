@@ -52,8 +52,8 @@ static void leavePlane (unsigned int passengerId);
  *  Its role is to generate the life cycle of one of intervening entities in the problem: the passenger.
  */
 
-int main (int argc, char *argv[])
-{
+int main (int argc, char *argv[]){
+
     int key;                                                           /*access key to shared memory and semaphore set */
     char *tinp;                                                                      /* numerical parameters test flag */
     int n;
@@ -121,8 +121,8 @@ int main (int argc, char *argv[])
  *  The passenger takes a random time to reach the airport
  */
 
-static bool travelToAirport ()
-{
+static bool travelToAirport (){
+
     usleep((unsigned int) floor ((MAXTRAVEL * random ()) / RAND_MAX + 1000));
 
     return true;
@@ -141,7 +141,7 @@ static bool travelToAirport ()
 static void waitInQueue (unsigned int passengerId)
 {
 
-    if (semUp (semgid, sh->passengersInQueue) == -1) {                                  /* Tell Host that he is here */
+    if (semUp (semgid, sh->passengersInQueue) == -1) {                                  /* Tell Host that he arrived at the airport */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
@@ -150,11 +150,9 @@ static void waitInQueue (unsigned int passengerId)
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
-
-        /* insert your code here */ 
-        // Update number of passenger in queue
-        sh->fSt.nPassInQueue++;
-        // Inform hostess that he is ready for boarding
+ 
+        // Update number of passenger in queue and Update State
+        sh->fSt.nPassInQueue++; 
         sh->fSt.st.passengerStat[passengerId] = IN_QUEUE;
         // Save State
         saveState(nFic, &sh->fSt);
@@ -164,7 +162,7 @@ static void waitInQueue (unsigned int passengerId)
         exit (EXIT_FAILURE);
     }
 
-    /* insert your code here */
+  
     if (semDown (semgid, sh->passengersWaitInQueue) == -1) {                                  /* Wait for host */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
@@ -174,8 +172,7 @@ static void waitInQueue (unsigned int passengerId)
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
-
-        /* insert your code here */ 
+ 
         // Provide its id to hostess and update state
         sh->fSt.passengerChecked = passengerId;
         sh->fSt.st.passengerStat[passengerId] = IN_FLIGHT;
@@ -186,9 +183,8 @@ static void waitInQueue (unsigned int passengerId)
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
+ 
 
-    /* insert your code here */
-    // Giver her permission to read the id
     if (semUp (semgid, sh->idShown) == -1) {                                    /* Tell Host the id was given */
         perror ("error on the Up operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
@@ -209,7 +205,7 @@ static void waitInQueue (unsigned int passengerId)
 static void waitUntilDestination (unsigned int passengerId)
 {
 
-    /* insert your code here */
+     
     if (semDown (semgid, sh->passengersWaitInFlight) == -1) {                                  /* Wait for Pilot */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
@@ -220,13 +216,18 @@ static void waitUntilDestination (unsigned int passengerId)
         exit (EXIT_FAILURE);
     }
 
-        /* insert your code here */
+        // Update number of passenger in Flight and Update State
         sh->fSt.nPassInFlight--;
         sh->fSt.st.passengerStat[passengerId] = AT_DESTINATION;
         
         if(sh->fSt.nPassInFlight == 0){
-            //inform pilot that plane is empty. 
+            // Inform pilot that plane is empty. 
             if (semUp (semgid, sh->planeEmpty) == -1) {                                  /* Free Pilot */
+                perror ("error on the down operation for semaphore access (PG)");
+                exit (EXIT_FAILURE);
+            }
+        }else{
+            if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                                  /* Free Pilot */
                 perror ("error on the down operation for semaphore access (PG)");
                 exit (EXIT_FAILURE);
             }
