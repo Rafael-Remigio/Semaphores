@@ -140,7 +140,7 @@ static bool travelToAirport (){
 
 static void waitInQueue (unsigned int passengerId)
 {
-
+    
     if (semUp (semgid, sh->passengersInQueue) == -1) {                                  /* Tell Host that he arrived at the airport */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);

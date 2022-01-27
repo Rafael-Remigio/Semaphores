@@ -222,8 +222,6 @@ static void waitUntilReadyToFlight (){
         perror ("error on the up operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
-    
-    
 }
 
 /**
@@ -236,7 +234,7 @@ static void waitUntilReadyToFlight (){
 
 static void dropPassengersAtTarget (){
 
-    if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
+    if (semDown (semgid, sh->mutex) == -1) {                                               /* enter critical region */
         perror ("error on the down operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
@@ -249,25 +247,25 @@ static void dropPassengersAtTarget (){
          
         
    
-    if (semUp (semgid, sh->mutex) == -1)  {                                                   /* exit critical region */
+    if (semUp (semgid, sh->mutex) == -1)  {                                                /* exit critical region */
         perror ("error on the up operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
 
  
-    if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                                  /* Let First Passenger leave */
+    if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                                      /* Let First Passenger leave */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
        
-    if (semDown (semgid, sh->planeEmpty) == -1) {                                  /* Wait for the last to leave */
+    if (semDown (semgid, sh->planeEmpty) == -1) {                                                /* Wait for the last to leave */
         perror ("error on the down operation for semaphore access (PG)");
         exit (EXIT_FAILURE);
     }
 
     
 
-    if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
+    if (semDown (semgid, sh->mutex) == -1) {                                               /* enter critical region */
         perror ("error on the down operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
@@ -275,7 +273,7 @@ static void dropPassengersAtTarget (){
         // Save State
         saveFlightReturning(nFic, &sh->fSt);
 
-    if (semUp (semgid, sh->mutex) == -1)  {                                                   /* exit critical region */
+    if (semUp (semgid, sh->mutex) == -1)  {                                                /* exit critical region */
         perror ("error on the up operation for semaphore access (PT)");
         exit (EXIT_FAILURE);
     }
