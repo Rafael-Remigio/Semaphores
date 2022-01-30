@@ -217,7 +217,7 @@ static bool checkPassport()
     bool last = false;
     
     /* insert your code here */
-    if (semUp (semgid, sh->passengersWaitInQueue) == -1)  {                                                 /* enter critical region */
+    if (semUp (semgid, sh->passengersWaitInQueue) == -1)  {                                                 /* Signal Passenger */
         perror ("error on the up operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
 
@@ -273,7 +273,7 @@ static bool checkPassport()
         exit (EXIT_FAILURE);
     }
 
-    /* insert your code here */                  // dk what to put here
+    /* insert your code here */                   
 
     return last;
 }
