@@ -227,7 +227,7 @@ static void waitUntilDestination (unsigned int passengerId)
                 exit (EXIT_FAILURE);
             }
         }else{
-            if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                                  /* Let NextPassenger leave */
+            if (semUp (semgid, sh->passengersWaitInFlight) == -1) {                      /* Let NextPassenger leave */
                 perror ("error on the down operation for semaphore access (PG)");
                 exit (EXIT_FAILURE);
             }

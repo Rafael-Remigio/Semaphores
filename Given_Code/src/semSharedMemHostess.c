@@ -217,7 +217,7 @@ static bool checkPassport()
     bool last = false;
     
     /* insert your code here */
-    if (semUp (semgid, sh->passengersWaitInQueue) == -1)  {                                                 /* Signal Passenger */
+    if (semUp (semgid, sh->passengersWaitInQueue) == -1)  {                                           /* Signal Passenger */
         perror ("error on the up operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
 
@@ -247,7 +247,7 @@ static bool checkPassport()
     }
 
     
-    if (semDown (semgid, sh->idShown) == -1)  {                                                 /* Wait for Passengers to show id */
+    if (semDown (semgid, sh->idShown) == -1)  {                                                     /* Wait for Passengers to show id */
         perror ("error on the up operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
 
