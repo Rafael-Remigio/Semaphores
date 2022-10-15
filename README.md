@@ -2,4 +2,4 @@
 
 Threading and semaphores in C
 
-Segundo trabalho da disciplina de Sistemas Operativos
+Second Assignment from Operating Systems class
