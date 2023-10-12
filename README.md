@@ -1,5 +1,5 @@
-# Semaphores
+# Semaphores - Simulação de Ponte Aérea
 
-Threading and semaphores in C
+Concurrency, Threading and semaphore problems in C.
 
 Second Assignment from Operating Systems class
